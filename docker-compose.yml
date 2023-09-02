@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  nginx:
+    build:
+      context: .
+      target: nginx_base
+    volumes:
+      - ./:/srv/app:ro,cached
+      - php_socket:/var/run/php
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    networks:
+      - app
+
+  php:
+    image: ${IMAGES_PREFIX:-}app-php
+    restart: unless-stopped
+    volumes:
+      - php_socket:/var/run/php
+    environment:
+      # The two next lines can be removed after initial installation
+      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+      STABILITY: ${STABILITY:-stable}
+    depends_on:
+      - db
+    networks:
+      - app
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: change_password
+    ports:
+      - "15432:5432"
+    networks:
+      - app
+
+volumes:
+  php_socket:
+
+networks:
+  app:
+    driver: bridge
