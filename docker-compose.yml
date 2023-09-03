@@ -25,21 +25,24 @@ services:
       SYMFONY_VERSION: ${SYMFONY_VERSION:-}
       STABILITY: ${STABILITY:-stable}
     depends_on:
-      - db
+      - database
     networks:
       - app
 
-  db:
-    image: postgres:15
+  database:
+    image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_PASSWORD: change_password
-    ports:
-      - "15432:5432"
+      POSTGRES_DB: ${POSTGRES_DB:-tourney}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-tourney}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
     networks:
       - app
 
 volumes:
+  database_data:
   php_socket:
 
 networks:
