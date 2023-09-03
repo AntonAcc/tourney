@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Team List{% endblock %}
+
+{% block body %}
+    <h2>Team List</h2>
+
+    {% for team in team_list %}
+        <div>{{ team.name }}</div>
+    {% endfor %}
+{% endblock %}
