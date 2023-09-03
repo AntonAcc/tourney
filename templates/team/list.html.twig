@@ -3,9 +3,12 @@
 {% block title %}Team List{% endblock %}
 
 {% block body %}
-    <h2>Team List</h2>
+    <div class="block">
+        <h2>Team list</h2>
+        {% for team in team_list %}
+            <div>{{ team.name }}</div>
+        {% endfor %}
+    </div>
 
-    {% for team in team_list %}
-        <div>{{ team.name }}</div>
-    {% endfor %}
+    {% include 'team/blocks/add.html.twig' %}
 {% endblock %}
