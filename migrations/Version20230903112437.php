@@ -18,12 +18,12 @@ final class Version20230903112437 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql("INSERT INTO team VALUES
-            (1, 'k1'),
-            (2, 'k2'),
-            (3, 'k3'),
-            (4, 'k4'),
-            (5, 'k5'),
-            (6, 'k6')
+            (nextval('tourney.team_id_seq'),'k1'),
+            (nextval('tourney.team_id_seq'),'k2'),
+            (nextval('tourney.team_id_seq'),'k3'),
+            (nextval('tourney.team_id_seq'),'k4'),
+            (nextval('tourney.team_id_seq'),'k5'),
+            (nextval('tourney.team_id_seq'),'k6')
         ");
     }
 
