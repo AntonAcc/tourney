@@ -27,6 +27,12 @@ class Team
     #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'teamList')]
     private Collection $tournamentList;
 
+    #[ORM\OneToMany(mappedBy: 'teamOne', targetEntity: TournamentGame::class)]
+    private Collection $tournamentGameOneList;
+
+    #[ORM\OneToMany(mappedBy: 'teamTwo', targetEntity: TournamentGame::class)]
+    private Collection $tournamentGameTwoList;
+
     /**
      * @param string $name
      */
@@ -34,6 +40,8 @@ class Team
     {
         $this->name = $name;
         $this->tournamentList = new ArrayCollection();
+        $this->tournamentGameOneList = new ArrayCollection();
+        $this->tournamentGameTwoList = new ArrayCollection();
     }
 
     /**
@@ -60,5 +68,32 @@ class Team
     public function getTournamentList(): Collection
     {
         return $this->tournamentList;
+    }
+
+    /**
+     * @return Collection<int, TournamentGame>
+     */
+    public function getTournamentGameOneList(): Collection
+    {
+        return $this->tournamentGameOneList;
+    }
+
+    /**
+     * @return Collection<int, TournamentGame>
+     */
+    public function getTournamentGameTwoList(): Collection
+    {
+        return $this->tournamentGameTwoList;
+    }
+
+    /**
+     * @return Collection<int, TournamentGame>
+     */
+    public function getTournamentGameList(): Collection
+    {
+        return new ArrayCollection(array_merge(
+            $this->tournamentGameOneList->toArray(),
+            $this->tournamentGameTwoList->toArray()
+        ));
     }
 }

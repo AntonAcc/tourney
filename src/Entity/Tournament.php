@@ -27,6 +27,9 @@ class Tournament
     #[ORM\ManyToMany(targetEntity: Team::class, inversedBy: 'tournamentList')]
     private Collection $teamList;
 
+    #[ORM\OneToMany(mappedBy: 'tournament', targetEntity: TournamentGame::class, orphanRemoval: true)]
+    private Collection $tournamentGameList;
+
     /**
      * @param string $name
      */
@@ -34,6 +37,7 @@ class Tournament
     {
         $this->name = $name;
         $this->teamList = new ArrayCollection();
+        $this->tournamentGameList = new ArrayCollection();
     }
 
     /**
@@ -76,5 +80,23 @@ class Tournament
     public function removeTeam(Team $team): void
     {
         $this->teamList->removeElement($team);
+    }
+
+    /**
+     * @return Collection<int, TournamentGame>
+     */
+    public function getTournamentGameList(): Collection
+    {
+        return $this->tournamentGameList;
+    }
+
+    /**
+     * @param TournamentGame $tournamentGame
+     */
+    public function addTournamentGame(TournamentGame $tournamentGame): void
+    {
+        if (!$this->tournamentGameList->contains($tournamentGame)) {
+            $this->tournamentGameList->add($tournamentGame);
+        }
     }
 }
