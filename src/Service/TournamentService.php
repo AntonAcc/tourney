@@ -6,35 +6,35 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Team;
-use App\Repository\TeamRepository;
+use App\Entity\Tournament;
+use App\Repository\TournamentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class TeamService
+class TournamentService
 {
     /**
-     * @param TeamRepository $teamRepository
+     * @param TournamentRepository $tournamentRepository
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(
-        readonly private TeamRepository $teamRepository,
+        readonly private TournamentRepository $tournamentRepository,
         readonly private EntityManagerInterface $entityManager,
     ) {}
 
     /**
-     * @return Team[]
+     * @return array
      */
     public function findAll(): array
     {
-        return $this->teamRepository->findAll();
+        return $this->tournamentRepository->findAll();
     }
 
     /**
-     * @param Team $team
+     * @param Tournament $tournament
      */
-    public function save(Team $team): void
+    public function save(Tournament $tournament): void
     {
-        $this->entityManager->persist($team);
+        $this->entityManager->persist($tournament);
         $this->entityManager->flush();
     }
 }

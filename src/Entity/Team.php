@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,12 +24,16 @@ class Team
     #[Assert\NotBlank]
     private string $name;
 
+    #[ORM\ManyToMany(targetEntity: Tournament::class, mappedBy: 'teamList')]
+    private Collection $tournamentList;
+
     /**
      * @param string $name
      */
     public function __construct(string $name)
     {
         $this->name = $name;
+        $this->tournamentList = new ArrayCollection();
     }
 
     /**
@@ -46,5 +52,13 @@ class Team
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Tournament>
+     */
+    public function getTournamentList(): Collection
+    {
+        return $this->tournamentList;
     }
 }
