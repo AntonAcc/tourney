@@ -3,11 +3,40 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
+    font-style: italic;
+    justify-content: center;
+    align-items: center;
+}
+
+.menu {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    font-style: italic;
+}
+
+.menu_item {
+    padding-top: 20px;
+    display:inline-block;
+}
+
+.menu_item a {
+    background-color: deepskyblue;
+    color: white;
+    border: none;
+    padding: 7px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 5px;
+    outline: none;
+    text-decoration: none;
+    font-style: normal;
+    font-size: 0.8rem;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .card {

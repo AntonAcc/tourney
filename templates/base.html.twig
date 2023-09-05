@@ -15,8 +15,15 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
     </head>
     <body>
-        <div class="card">
-            {% block body %}{% endblock %}
+        <div class="menu">
+            <div class="menu_item"><a href="{{ path('root') }}">Root</a></div>
+            <div class="menu_item"><a href="{{ path('team_list') }}">Teams</a></div>
+            <div class="menu_item"><a href="{{ path('tournament_list') }}">Tournaments</a></div>
+        </div>
+        <div class="content">
+            <div class="card">
+                {% block body %}{% endblock %}
+            </div>
         </div>
     </body>
 </html>
