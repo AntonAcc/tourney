@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tournament List{% endblock %}
+
+{% block body %}
+    <div class="block">
+        <h2>Tournament list</h2>
+        {% if tournament_list|length == 0 %}
+            <div>No tournaments yet</div>
+        {% else %}
+            {% for tournament in tournament_list %}
+                <div>
+                    <a target="_blank" href="{{ path('tournament_show', { id: tournament.id }) }}">{{ tournament.name }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -41,6 +41,14 @@ class Tournament
     }
 
     /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string

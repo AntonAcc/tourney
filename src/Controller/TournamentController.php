@@ -21,6 +21,16 @@ class TournamentController extends AbstractController
         readonly private TournamentService $tournamentService
     ) {}
 
+    #[Route('/', name: 'root')]
+    public function listWithLinks(): Response
+    {
+        $tournamentList = $this->tournamentService->findAll();
+
+        return $this->render('tournament/list_with_links.html.twig', [
+            'tournament_list' => $tournamentList,
+        ]);
+    }
+
     #[Route('/tournaments', name: 'tournament_list')]
     public function list(): Response
     {
