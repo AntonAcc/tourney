@@ -1,5 +1,9 @@
 # Test Assignment - Tournament Manager
 
+## Assignment specifications:
+
+https://github.com/AntonAcc/tourney/blob/master/specifications.md
+
 ## Testing:
 
 1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
@@ -14,4 +18,4 @@ docker compose exec -T php bin/phpunit
 
 ### App
 
-Open in your web browser http://localhost:8080/
+Open in your web browser http://localhost:8080
