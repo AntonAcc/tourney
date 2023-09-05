@@ -11,6 +11,8 @@ use App\Entity\TournamentGame;
 use App\Repository\TournamentRepository;
 use App\Service\TournamentService\GameTableFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use DomainException;
+use Throwable;
 
 class TournamentService
 {
@@ -50,5 +52,34 @@ class TournamentService
         $this->entityManager->flush();
     }
 
+    /**
+     * @param int $id
+     *
+     * @return bool
+     */
+    public function has(int $id): bool
+    {
+        try {
+            $this->get($id);
+        } catch (Throwable $e) {
+            return false;
+        }
 
+        return true;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return Tournament
+     */
+    public function get(int $id): Tournament
+    {
+        $tournament = $this->tournamentRepository->find($id);
+        if ($tournament === null) {
+            throw new DomainException(sprintf('Not found tournament with id %s ', $id));
+        }
+
+        return $tournament;
+    }
 }

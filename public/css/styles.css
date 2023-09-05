@@ -21,3 +21,12 @@ body {
 .block {
     padding: 20px;
 }
+
+.tournament_day {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.tournament_game {
+    padding-left: 20px;
+}

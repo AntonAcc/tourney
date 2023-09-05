@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Controller\TournamentController\TournamentShowView;
 use App\Entity\Tournament;
 use App\Form\TournamentType;
 use App\Service\TournamentService;
@@ -51,4 +52,19 @@ class TournamentController extends AbstractController
         ]);
     }
 
+    #[Route('/tournaments/{id}', name: 'tournament_show')]
+    public function show(int $id): Response
+    {
+        if (!$this->tournamentService->has($id)) {
+            return $this->render('tournament/show_error.html.twig', [
+                'error' => sprintf('Not found tournament with id %s ', $id),
+            ]);
+        }
+
+        $tournament = $this->tournamentService->get($id);
+
+        return $this->render('tournament/show.html.twig', [
+            'tournament_view' => new TournamentShowView($tournament),
+        ]);
+    }
 }
