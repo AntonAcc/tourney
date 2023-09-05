@@ -6,11 +6,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Service\TournamentService\GameTableFactory;
 
-use App\Service\TournamentService\GameTableFactory\AvailableTeamKeyPairCollection;
+use App\Service\TournamentService\GameTableFactory\AvailablePairMatrix;
 use DomainException;
 use PHPUnit\Framework\TestCase;
 
-class AvailableTeamKeyPairCollectionTest extends TestCase
+class AvailablePairMatrixTest extends TestCase
 {
     public function testOneTeam(): void
     {
@@ -19,7 +19,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
         ];
 
         $this->expectException(DomainException::class);
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
     }
 
     public function testTwoTeamsCreating(): void
@@ -29,7 +29,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
             1,
         ];
 
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
 
         $this->assertTrue($availableTeamKeyPairCollection->hasAny());
         $this->assertTrue($availableTeamKeyPairCollection->hasPairFor(0));
@@ -45,7 +45,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
             1,
         ];
 
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
         $availableTeamKeyPairCollection->removePair(0, 1);
 
         $this->assertFalse($availableTeamKeyPairCollection->hasAny());
@@ -62,7 +62,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
             1,
         ];
 
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
         $availableTeamKeyPairCollection->removePair(1, 0);
 
         $this->assertFalse($availableTeamKeyPairCollection->hasAny());
@@ -80,7 +80,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
             2,
         ];
 
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
 
         $this->assertTrue($availableTeamKeyPairCollection->hasAny());
         $this->assertTrue($availableTeamKeyPairCollection->hasPairFor(0));
@@ -102,7 +102,7 @@ class AvailableTeamKeyPairCollectionTest extends TestCase
             2,
         ];
 
-        $availableTeamKeyPairCollection = new AvailableTeamKeyPairCollection($teamKeyList);
+        $availableTeamKeyPairCollection = new AvailablePairMatrix($teamKeyList);
         $availableTeamKeyPairCollection->removePair(0, 1);
 
         $this->assertTrue($availableTeamKeyPairCollection->hasAny());

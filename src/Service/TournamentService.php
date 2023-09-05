@@ -39,7 +39,7 @@ class TournamentService
      */
     public function save(Tournament $tournament): void
     {
-        $tournamentTable = $this->gameTableFactory->createGameTable($tournament->getTeamList()->toArray(), true);
+        $tournamentTable = $this->gameTableFactory->createGameTable($tournament->getTeamList()->toArray());
         foreach ($tournamentTable as $day => $dayGameList) {
             foreach ($dayGameList as $dayGame) {
                 [$teamOne, $teamTwo] = $dayGame;

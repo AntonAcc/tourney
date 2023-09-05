@@ -8,9 +8,9 @@ namespace App\Service\TournamentService\GameTableFactory;
 
 use DomainException;
 
-class AvailableTeamKeyPairCollection
+class AvailablePairMatrix
 {
-    private array $teamPairAvailableList;
+    private array $availablePairMatrix;
 
     /**
      * @param array $teamKeyList
@@ -21,15 +21,15 @@ class AvailableTeamKeyPairCollection
             throw new DomainException("Can't create available pairs for less than two teams");
         }
 
-        $this->teamPairAvailableList = [];
+        $this->availablePairMatrix = [];
 
         foreach ($teamKeyList as $teamKeyOne) {
             foreach ($teamKeyList as $teamKeyTwo) {
                 if ($teamKeyOne === $teamKeyTwo) {
                     continue;
                 }
-                $this->teamPairAvailableList[$teamKeyOne][$teamKeyTwo] = true;
-                $this->teamPairAvailableList[$teamKeyTwo][$teamKeyOne] = true;
+                $this->availablePairMatrix[$teamKeyOne][$teamKeyTwo] = true;
+                $this->availablePairMatrix[$teamKeyTwo][$teamKeyOne] = true;
             }
         }
     }
@@ -39,7 +39,7 @@ class AvailableTeamKeyPairCollection
      */
     public function hasAny(): bool
     {
-        return count($this->teamPairAvailableList) > 0;
+        return count($this->availablePairMatrix) > 0;
     }
 
     /**
@@ -49,7 +49,7 @@ class AvailableTeamKeyPairCollection
      */
     public function hasPairFor(int $teamKey): bool
     {
-        return isset($this->teamPairAvailableList[$teamKey]);
+        return isset($this->availablePairMatrix[$teamKey]);
     }
 
     /**
@@ -60,7 +60,7 @@ class AvailableTeamKeyPairCollection
      */
     public function hasPair(int $teamKeyOne, int $teamKeyTwo): bool
     {
-        return isset($this->teamPairAvailableList[$teamKeyOne][$teamKeyTwo]);
+        return isset($this->availablePairMatrix[$teamKeyOne][$teamKeyTwo]);
     }
 
     /**
@@ -71,13 +71,13 @@ class AvailableTeamKeyPairCollection
      */
     public function removePair(int $teamKeyOne, int $teamKeyTwo): void
     {
-        unset($this->teamPairAvailableList[$teamKeyOne][$teamKeyTwo]);
-        if (count($this->teamPairAvailableList[$teamKeyOne]) === 0) {
-            unset($this->teamPairAvailableList[$teamKeyOne]);
+        unset($this->availablePairMatrix[$teamKeyOne][$teamKeyTwo]);
+        if (count($this->availablePairMatrix[$teamKeyOne]) === 0) {
+            unset($this->availablePairMatrix[$teamKeyOne]);
         }
-        unset($this->teamPairAvailableList[$teamKeyTwo][$teamKeyOne]);
-        if (count($this->teamPairAvailableList[$teamKeyTwo]) === 0) {
-            unset($this->teamPairAvailableList[$teamKeyTwo]);
+        unset($this->availablePairMatrix[$teamKeyTwo][$teamKeyOne]);
+        if (count($this->availablePairMatrix[$teamKeyTwo]) === 0) {
+            unset($this->availablePairMatrix[$teamKeyTwo]);
         }
     }
 }

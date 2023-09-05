@@ -29,7 +29,7 @@ class GameTableFactoryTest extends TestCase
         $this->gameTableFactory->createGameTable($teamList);
     }
 
-    public function testTwoTeams(): void
+    public function testTwoTeamsDefault(): void
     {
         $teamList = [
             't1',
@@ -39,49 +39,36 @@ class GameTableFactoryTest extends TestCase
         $gameTable = $this->gameTableFactory->createGameTable($teamList);
 
         $this->assertEquals([
-            ['t1', 't2'],
+            1 => [
+                ['t1', 't2'],
+            ]
         ], $gameTable);
     }
 
-    public function testThreeTeams(): void
-    {
-        $teamList = [
-            't1',
-            't2',
-            't3',
-        ];
-
-        $gameTable = $this->gameTableFactory->createGameTable($teamList);
-
-        $this->assertEquals([
-            ['t1', 't2'],
-            ['t3', 't1'],
-            ['t2', 't3'],
-        ], $gameTable);
-    }
-
-    public function testFourTeams(): void
+    public function testThreeTeamsDefault(): void
     {
         $teamList = [
             't1',
             't2',
             't3',
-            't4',
         ];
 
         $gameTable = $this->gameTableFactory->createGameTable($teamList);
 
         $this->assertEquals([
-            ['t1', 't2'],
-            ['t3', 't4'],
-            ['t1', 't3'],
-            ['t2', 't4'],
-            ['t1', 't4'],
-            ['t3', 't2'],
+            1 => [
+                ['t1', 't2'],
+            ],
+            2 => [
+                ['t3', 't1'],
+            ],
+            3 => [
+                ['t2', 't3'],
+            ],
         ], $gameTable);
     }
 
-    public function testFourTeamsDaySeparation(): void
+    public function testFourTeamsDefault(): void
     {
         $teamList = [
             't1',
@@ -90,7 +77,7 @@ class GameTableFactoryTest extends TestCase
             't4',
         ];
 
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, true);
+        $gameTable = $this->gameTableFactory->createGameTable($teamList);
 
         $this->assertEquals([
             1 => [
@@ -108,7 +95,7 @@ class GameTableFactoryTest extends TestCase
         ], $gameTable);
     }
 
-    public function testFourTeamsDaySeparationMaxTeamGameTwo(): void
+    public function testFourTeamsMaxTeamGameTwo(): void
     {
         $teamList = [
             't1',
@@ -117,7 +104,7 @@ class GameTableFactoryTest extends TestCase
             't4',
         ];
 
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, true, 2, PHP_INT_MAX);
+        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, PHP_INT_MAX);
 
         $this->assertEquals([
             1 => [
@@ -133,7 +120,7 @@ class GameTableFactoryTest extends TestCase
         ], $gameTable);
     }
 
-    public function testFourTeamsDaySeparationMaxDayGameOne(): void
+    public function testFourTeamsMaxDayGameOne(): void
     {
         $teamList = [
             't1',
@@ -142,7 +129,7 @@ class GameTableFactoryTest extends TestCase
             't4',
         ];
 
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, true, 2, 1);
+        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, 1);
 
         $this->assertEquals([
             1 => [

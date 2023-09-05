@@ -13,23 +13,16 @@ class DayGameCounterTest extends TestCase
 {
     public function testNoGames(): void
     {
-        $counter = new DayGameCounter(true, 1);
+        $counter = new DayGameCounter(1);
         $this->assertTrue($counter->canHaveGame(1, 0));
     }
 
     public function testOneGame(): void
     {
-        $counter = new DayGameCounter(true, 1);
+        $counter = new DayGameCounter(1);
         $counter->increase(1, 0);
         $this->assertFalse($counter->canHaveGame(1, 0));
         $this->assertTrue($counter->canHaveGame(2, 0));
-    }
-
-    public function testNoDaySeparation(): void
-    {
-        $counter = new DayGameCounter(false, 1);
-        $counter->increase(1, 0);
-        $this->assertTrue($counter->canHaveGame(1, 0));
     }
 }
 

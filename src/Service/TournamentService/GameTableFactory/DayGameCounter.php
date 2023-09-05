@@ -11,7 +11,6 @@ class DayGameCounter
     private array $gameCount = [];
 
     public function __construct(
-        readonly private bool $daysSeparation,
         readonly private int $maxTeamGamePerDay
     ) {}
 
@@ -38,6 +37,6 @@ class DayGameCounter
      */
     public function canHaveGame(int $day, int $teamKey): bool
     {
-        return !$this->daysSeparation || !isset($this->gameCount[$day][$teamKey]) || $this->gameCount[$day][$teamKey] < $this->maxTeamGamePerDay;
+        return !isset($this->gameCount[$day][$teamKey]) || $this->gameCount[$day][$teamKey] < $this->maxTeamGamePerDay;
     }
 }
