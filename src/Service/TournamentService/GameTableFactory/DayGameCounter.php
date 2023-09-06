@@ -35,8 +35,21 @@ class DayGameCounter
      *
      * @return bool
      */
-    public function canHaveGame(int $day, int $teamKey): bool
+    public function canTeamHaveGame(int $day, int $teamKey): bool
     {
         return !isset($this->gameCount[$day][$teamKey]) || $this->gameCount[$day][$teamKey] < $this->maxTeamGamePerDay;
+    }
+
+    /**
+     * @param int $day
+     * @param array $teamKeyPair
+     *
+     * @return bool
+     */
+    public function canPairHaveGame(int $day, array $teamKeyPair): bool
+    {
+        [$teamKeyOne, $teamKeyTwo] = $teamKeyPair;
+
+        return $this->canTeamHaveGame($day, $teamKeyOne) && $this->canTeamHaveGame($day, $teamKeyTwo);
     }
 }

@@ -29,32 +29,79 @@ class GameTableFactory
 
         $availablePairList = new AvailablePairList($teamKeyList);
 
+        $pairTable = $this->getOptimalPairTable($availablePairList, $dayGameCounter, $maxGamePerDay);
+
         $gameTable = [];
-        while ($availablePairList->hasAny()) {
-            foreach ($availablePairList->asArray() as $pairKey => $pair) {
+        foreach ($pairTable as $day => $pairList) {
+            foreach ($pairList as $pair) {
                 [$teamKeyOne, $teamKeyTwo] = $pair;
-
-                if (
-                    !$dayGameCounter->canHaveGame($currentDay, $teamKeyOne)
-                    || !$dayGameCounter->canHaveGame($currentDay, $teamKeyTwo)
-                ) {
-                    continue;
-                }
-
-                $gameTable[$currentDay][] = [$teamList[$teamKeyOne], $teamList[$teamKeyTwo]];
-                $availablePairList->remove($pairKey);
-
-                $dayGameCounter->increase($currentDay, $teamKeyOne);
-                $dayGameCounter->increase($currentDay, $teamKeyTwo);
-
-                if (count($gameTable[$currentDay]) >= $maxGamePerDay) {
-                    $currentDay++;
-                    continue 2;
-                }
+                $gameTable[$day][] = [$teamList[$teamKeyOne], $teamList[$teamKeyTwo]];
             }
-            $currentDay++;
         }
 
         return $gameTable;
+    }
+
+    /**
+     * @param AvailablePairList $availablePairList
+     * @param DayGameCounter $dayGameCounter
+     * @param int $currentDay
+     * @param int $maxGamePerDay
+     * @param array $gameTable
+     *
+     * @return array
+     */
+    private function getOptimalPairTable(
+        AvailablePairList $availablePairList,
+        DayGameCounter $dayGameCounter,
+        int $maxGamePerDay,
+        int $currentDay = 1,
+        array $gameTable = []
+    ): array {
+        if (!$availablePairList->hasAny()) {
+            return $gameTable;
+        }
+
+        $gameTableList = [];
+        foreach ($availablePairList->asArray() as $pairKey => $pair) {
+            [$teamKeyOne, $teamKeyTwo] = $pair;
+            if (!$dayGameCounter->canPairHaveGame($currentDay, $pair)) {
+                continue;
+            }
+
+            $clonedDayGameCounter = clone $dayGameCounter;
+            $clonedDayGameCounter->increase($currentDay, $teamKeyOne);
+            $clonedDayGameCounter->increase($currentDay, $teamKeyTwo);
+
+            $clonedAvailablePairList = clone $availablePairList;
+            $clonedAvailablePairList->remove($pairKey);
+
+            $gameTableCopy = $gameTable;
+            $gameTableCopy[$currentDay][] = $pair;
+
+            $currentDayCopy = $currentDay;
+            if (count($gameTableCopy[$currentDayCopy]) >= $maxGamePerDay) {
+                $currentDayCopy++;
+            }
+
+            $gameTableList[] = $this->getOptimalPairTable($clonedAvailablePairList, $clonedDayGameCounter, $maxGamePerDay, $currentDayCopy, $gameTableCopy);
+        }
+
+        if (count($gameTableList) === 0) {
+            $clonedDayGameCounter = clone $dayGameCounter;
+
+            $clonedAvailablePairList = clone $availablePairList;
+
+            $gameTableCopy = $gameTable;
+
+            $currentDayCopy = $currentDay;
+            $currentDayCopy++;
+
+            return $this->getOptimalPairTable($clonedAvailablePairList, $clonedDayGameCounter, $maxGamePerDay, $currentDayCopy, $gameTableCopy);
+        }
+
+        usort($gameTableList, static fn (array $a, array $b) => count($a) <=> count($b));
+
+        return array_shift($gameTableList);
     }
 }

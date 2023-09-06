@@ -14,15 +14,15 @@ class DayGameCounterTest extends TestCase
     public function testNoGames(): void
     {
         $counter = new DayGameCounter(1);
-        $this->assertTrue($counter->canHaveGame(1, 0));
+        $this->assertTrue($counter->canTeamHaveGame(1, 0));
     }
 
     public function testOneGame(): void
     {
         $counter = new DayGameCounter(1);
         $counter->increase(1, 0);
-        $this->assertFalse($counter->canHaveGame(1, 0));
-        $this->assertTrue($counter->canHaveGame(2, 0));
+        $this->assertFalse($counter->canTeamHaveGame(1, 0));
+        $this->assertTrue($counter->canTeamHaveGame(2, 0));
     }
 }
 
