@@ -95,64 +95,6 @@ class GameTableFactoryTest extends TestCase
         ], $gameTable);
     }
 
-    public function testFourTeamsMaxTeamGameTwo(): void
-    {
-        $teamList = [
-            't1',
-            't2',
-            't3',
-            't4',
-        ];
-
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, PHP_INT_MAX);
-
-        $this->assertEquals([
-            1 => [
-                ['t1', 't2'],
-                ['t3', 't4'],
-                ['t1', 't3'],
-                ['t2', 't4'],
-            ],
-            2 => [
-                ['t1', 't4'],
-                ['t3', 't2'],
-            ]
-        ], $gameTable);
-    }
-
-    public function testFourTeamsMaxDayGameOne(): void
-    {
-        $teamList = [
-            't1',
-            't2',
-            't3',
-            't4',
-        ];
-
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, 1);
-
-        $this->assertEquals([
-            1 => [
-                ['t1', 't2'],
-            ],
-            2 => [
-                ['t3', 't4'],
-            ],
-            3 => [
-                ['t1', 't3'],
-            ],
-            4 => [
-                ['t2', 't4'],
-            ],
-            5 => [
-                ['t1', 't4'],
-            ],
-            6 => [
-                ['t3', 't2'],
-            ]
-        ], $gameTable);
-    }
-
     public function testFiveTeams(): void
     {
         $teamList = [
