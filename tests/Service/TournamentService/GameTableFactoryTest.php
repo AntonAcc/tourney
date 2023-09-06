@@ -153,6 +153,42 @@ class GameTableFactoryTest extends TestCase
         ], $gameTable);
     }
 
+    public function testFiveTeams(): void
+    {
+        $teamList = [
+            't1',
+            't2',
+            't3',
+            't4',
+            't5',
+        ];
+
+        $gameTable = $this->gameTableFactory->createGameTable($teamList);
+
+        $this->assertEquals([
+            1 => [
+                ['t1', 't2'],
+                ['t3', 't4'],
+            ],
+            2 => [
+                ['t5', 't1'],
+                ['t2', 't3'],
+            ],
+            3 => [
+                ['t4', 't5'],
+                ['t1', 't3'],
+            ],
+            4 => [
+                ['t2', 't4'],
+                ['t5', 't3'],
+            ],
+            5 => [
+                ['t1', 't4'],
+                ['t2', 't5'],
+            ],
+        ], $gameTable);
+    }
+
 //    public function testFromSpecification(): void
 //    {
 //        $teamList = [

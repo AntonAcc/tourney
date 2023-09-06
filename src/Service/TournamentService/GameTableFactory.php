@@ -47,7 +47,7 @@ class GameTableFactory
      * @param DayGameCounter $dayGameCounter
      * @param int $currentDay
      * @param int $maxGamePerDay
-     * @param array $gameTable
+     * @param array $gameTableCarry
      *
      * @return array
      */
@@ -56,13 +56,14 @@ class GameTableFactory
         DayGameCounter $dayGameCounter,
         int $maxGamePerDay,
         int $currentDay = 1,
-        array $gameTable = []
+        array $gameTableCarry = []
     ): array {
         if (!$availablePairList->hasAny()) {
-            return $gameTable;
+            return $gameTableCarry;
         }
 
-        $gameTableList = [];
+        $gameTable = null;
+        $gameTableDayCount = null;
         foreach ($availablePairList->asArray() as $pairKey => $pair) {
             [$teamKeyOne, $teamKeyTwo] = $pair;
             if (!$dayGameCounter->canPairHaveGame($currentDay, $pair)) {
@@ -76,7 +77,7 @@ class GameTableFactory
             $clonedAvailablePairList = clone $availablePairList;
             $clonedAvailablePairList->remove($pairKey);
 
-            $gameTableCopy = $gameTable;
+            $gameTableCopy = $gameTableCarry;
             $gameTableCopy[$currentDay][] = $pair;
 
             $currentDayCopy = $currentDay;
@@ -84,15 +85,25 @@ class GameTableFactory
                 $currentDayCopy++;
             }
 
-            $gameTableList[] = $this->getOptimalPairTable($clonedAvailablePairList, $clonedDayGameCounter, $maxGamePerDay, $currentDayCopy, $gameTableCopy);
+            $gameTableNew = $this->getOptimalPairTable($clonedAvailablePairList, $clonedDayGameCounter, $maxGamePerDay, $currentDayCopy, $gameTableCopy);
+            if ($gameTable === null) {
+                $gameTable = $gameTableNew;
+                $gameTableDayCount = count($gameTable);
+            } else {
+                $gameTableNewDayCount = count($gameTableNew);
+                if ($gameTableNewDayCount < $gameTableDayCount) {
+                    $gameTable = $gameTableNew;
+                    $gameTableDayCount = $gameTableNewDayCount;
+                }
+            }
         }
 
-        if (count($gameTableList) === 0) {
+        if ($gameTable === null) {
             $clonedDayGameCounter = clone $dayGameCounter;
 
             $clonedAvailablePairList = clone $availablePairList;
 
-            $gameTableCopy = $gameTable;
+            $gameTableCopy = $gameTableCarry;
 
             $currentDayCopy = $currentDay;
             $currentDayCopy++;
@@ -100,8 +111,6 @@ class GameTableFactory
             return $this->getOptimalPairTable($clonedAvailablePairList, $clonedDayGameCounter, $maxGamePerDay, $currentDayCopy, $gameTableCopy);
         }
 
-        usort($gameTableList, static fn (array $a, array $b) => count($a) <=> count($b));
-
-        return array_shift($gameTableList);
+        return $gameTable;
     }
 }
