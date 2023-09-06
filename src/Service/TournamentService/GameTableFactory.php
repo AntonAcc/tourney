@@ -24,7 +24,7 @@ class GameTableFactory
 
         $availablePairList = new AvailablePairList($teamKeyList);
 
-        $pairTable = $this->getOptimalPairTable($availablePairList, $maxGamePerDay);
+        $pairTable = $this->getOptimalPairTable($availablePairList->asArray(), $maxGamePerDay);
 
         $gameTable = [];
         foreach ($pairTable as $day => $pairList) {
@@ -38,7 +38,7 @@ class GameTableFactory
     }
 
     /**
-     * @param AvailablePairList $availablePairList
+     * @param array $availablePairListCarry
      * @param int $maxGamePerDay
      * @param int $currentDay
      * @param array $scheduledTeamKeyListCarry
@@ -47,19 +47,19 @@ class GameTableFactory
      * @return array
      */
     private function getOptimalPairTable(
-        AvailablePairList $availablePairList,
+        array $availablePairListCarry,
         int $maxGamePerDay,
         int $currentDay = 1,
         array $scheduledTeamKeyListCarry = [],
         array $gameTableCarry = []
     ): array {
-        if (!$availablePairList->hasAny()) {
+        if (count($availablePairListCarry) === 0) {
             return $gameTableCarry;
         }
 
         $gameTable = null;
         $gameTableDayCount = null;
-        foreach ($availablePairList->asArray() as $pairKey => $pair) {
+        foreach ($availablePairListCarry as $pairKey => $pair) {
             [$teamKeyOne, $teamKeyTwo] = $pair;
             if (isset($scheduledTeamKeyListCarry[$teamKeyOne]) || isset($scheduledTeamKeyListCarry[$teamKeyTwo])) {
                 continue;
@@ -69,8 +69,8 @@ class GameTableFactory
             $scheduledTeamKeyListCopy[$teamKeyOne] = 1;
             $scheduledTeamKeyListCopy[$teamKeyTwo] = 1;
 
-            $clonedAvailablePairList = clone $availablePairList;
-            $clonedAvailablePairList->remove($pairKey);
+            $availablePairListCopy = $availablePairListCarry;
+            unset($availablePairListCopy[$pairKey]);
 
             $gameTableCopy = $gameTableCarry;
             $gameTableCopy[$currentDay][] = $pair;
@@ -81,7 +81,7 @@ class GameTableFactory
                 $scheduledTeamKeyListCopy = [];
             }
 
-            $gameTableNew = $this->getOptimalPairTable($clonedAvailablePairList, $maxGamePerDay, $currentDayCopy, $scheduledTeamKeyListCopy, $gameTableCopy);
+            $gameTableNew = $this->getOptimalPairTable($availablePairListCopy, $maxGamePerDay, $currentDayCopy, $scheduledTeamKeyListCopy, $gameTableCopy);
             if ($gameTable === null) {
                 $gameTable = $gameTableNew;
                 $gameTableDayCount = count($gameTable);
@@ -95,11 +95,7 @@ class GameTableFactory
         }
 
         if ($gameTable === null) {
-            $clonedAvailablePairList = clone $availablePairList;
-
-            $gameTableCopy = $gameTableCarry;
-
-            return $this->getOptimalPairTable($clonedAvailablePairList, $maxGamePerDay, $currentDay + 1, [], $gameTableCopy);
+            return $this->getOptimalPairTable($availablePairListCarry, $maxGamePerDay, $currentDay + 1, [], $gameTableCarry);
         }
 
         return $gameTable;
