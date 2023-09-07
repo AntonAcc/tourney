@@ -20,11 +20,11 @@ class GameTableFactory
         }
 
         $teamList = array_values($teamList);
-        $teamKeyList =  array_keys($teamList);
+        $teamKeyList = array_keys($teamList);
 
         $availablePairList = new AvailablePairList($teamKeyList);
 
-        $pairTable = $this->getOptimalPairTable($availablePairList->asArray(), $maxGamePerDay);
+        $pairTable = $this->getOptimalPairTable($availablePairList->asArray(), $availablePairList->asArray(), $maxGamePerDay);
 
         $gameTable = [];
         foreach ($pairTable as $day => $pairList) {
@@ -38,7 +38,8 @@ class GameTableFactory
     }
 
     /**
-     * @param array $availablePairListCarry
+     * @param array $availablePairListDay
+     * @param array $availablePairListStage
      * @param int $maxGamePerDay
      * @param int $currentDay
      * @param array $scheduledTeamKeyListCarry
@@ -47,19 +48,23 @@ class GameTableFactory
      * @return array
      */
     private function getOptimalPairTable(
-        array $availablePairListCarry,
-        int $maxGamePerDay,
-        int $currentDay = 1,
+        array $availablePairListDay,
+        array $availablePairListStage,
+        int   $maxGamePerDay,
+        int   $currentDay = 1,
         array $scheduledTeamKeyListCarry = [],
         array $gameTableCarry = []
-    ): array {
-        if (count($availablePairListCarry) === 0) {
+    ): array
+    {
+        if (count($availablePairListDay) === 0 && count($availablePairListStage) === 0) {
             return $gameTableCarry;
         }
 
         $gameTable = null;
         $gameTableDayCount = null;
-        foreach ($availablePairListCarry as $pairKey => $pair) {
+        $cutFrom = 0;
+        foreach ($availablePairListStage as $pairKey => $pair) {
+            $cutFrom++;
             [$teamKeyOne, $teamKeyTwo] = $pair;
             if (isset($scheduledTeamKeyListCarry[$teamKeyOne]) || isset($scheduledTeamKeyListCarry[$teamKeyTwo])) {
                 continue;
@@ -69,19 +74,18 @@ class GameTableFactory
             $scheduledTeamKeyListCopy[$teamKeyOne] = 1;
             $scheduledTeamKeyListCopy[$teamKeyTwo] = 1;
 
-            $availablePairListCopy = $availablePairListCarry;
-            unset($availablePairListCopy[$pairKey]);
+            $availablePairListStageCut = array_slice($availablePairListStage, $cutFrom, null, true);
 
             $gameTableCopy = $gameTableCarry;
-            $gameTableCopy[$currentDay][] = $pair;
+            $gameTableCopy[$currentDay][$pairKey] = $pair;
 
-            $currentDayCopy = $currentDay;
-            if (count($gameTableCopy[$currentDayCopy]) >= $maxGamePerDay) {
-                $currentDayCopy++;
-                $scheduledTeamKeyListCopy = [];
+            if (count($gameTableCopy[$currentDay]) >= $maxGamePerDay) {
+                $availablePairListNextDay = array_diff_key($availablePairListDay, $gameTableCopy[$currentDay]);
+                $gameTableNew = $this->getOptimalPairTable($availablePairListNextDay, $availablePairListNextDay, $maxGamePerDay, $currentDay + 1, [], $gameTableCopy);
+            } else {
+                $gameTableNew = $this->getOptimalPairTable($availablePairListDay, $availablePairListStageCut, $maxGamePerDay, $currentDay, $scheduledTeamKeyListCopy, $gameTableCopy);
             }
 
-            $gameTableNew = $this->getOptimalPairTable($availablePairListCopy, $maxGamePerDay, $currentDayCopy, $scheduledTeamKeyListCopy, $gameTableCopy);
             if ($gameTable === null) {
                 $gameTable = $gameTableNew;
                 $gameTableDayCount = count($gameTable);
@@ -95,7 +99,9 @@ class GameTableFactory
         }
 
         if ($gameTable === null) {
-            return $this->getOptimalPairTable($availablePairListCarry, $maxGamePerDay, $currentDay + 1, [], $gameTableCarry);
+            $availablePairListNextDay = array_diff_key($availablePairListDay, $gameTableCarry[$currentDay]);
+
+            return $this->getOptimalPairTable($availablePairListNextDay, $availablePairListNextDay, $maxGamePerDay, $currentDay + 1, [], $gameTableCarry);
         }
 
         return $gameTable;
