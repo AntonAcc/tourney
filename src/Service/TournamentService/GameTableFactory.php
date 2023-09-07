@@ -24,7 +24,7 @@ class GameTableFactory
 
         $availablePairList = new AvailablePairList($teamKeyList);
 
-        $pairTable = $this->getOptimalPairTable($availablePairList->asArray(), $availablePairList->asArray(), $maxGamePerDay);
+        $pairTable = $this->getOptimalPairTable($availablePairList->asArray(), $maxGamePerDay);
 
         $gameTable = [];
         foreach ($pairTable as $day => $pairList) {
@@ -38,25 +38,41 @@ class GameTableFactory
     }
 
     /**
-     * @param array $availablePairListDay
      * @param array $availablePairListStage
      * @param int $maxGamePerDay
-     * @param int $currentDay
+     *
+     * @return array
+     */
+    private function getOptimalPairTable(
+        array $availablePairListStage,
+        int   $maxGamePerDay,
+    ): array {
+        $currentDay = 0;
+        $gameTable = [];
+        while (count($availablePairListStage) !== 0) {
+            $currentDay++;
+            $gameTable[$currentDay] = $this->getMaxPairTableForDay($availablePairListStage, $maxGamePerDay);
+            $availablePairListStage = array_diff_key($availablePairListStage, $gameTable[$currentDay]);
+        }
+
+        return $gameTable;
+    }
+
+    /**
+     * @param array $availablePairListStage
+     * @param int $maxGamePerDay
      * @param array $scheduledTeamKeyListCarry
      * @param array $gameTableCarry
      *
      * @return array
      */
-    private function getOptimalPairTable(
-        array $availablePairListDay,
+    private function getMaxPairTableForDay(
         array $availablePairListStage,
         int   $maxGamePerDay,
-        int   $currentDay = 1,
         array $scheduledTeamKeyListCarry = [],
         array $gameTableCarry = []
-    ): array
-    {
-        if (count($availablePairListDay) === 0 && count($availablePairListStage) === 0) {
+    ): array {
+        if (count($availablePairListStage) === 0) {
             return $gameTableCarry;
         }
 
@@ -77,33 +93,27 @@ class GameTableFactory
             $availablePairListStageCut = array_slice($availablePairListStage, $cutFrom, null, true);
 
             $gameTableCopy = $gameTableCarry;
-            $gameTableCopy[$currentDay][$pairKey] = $pair;
+            $gameTableCopy[$pairKey] = $pair;
 
-            if (count($gameTableCopy[$currentDay]) >= $maxGamePerDay) {
-                $availablePairListNextDay = array_diff_key($availablePairListDay, $gameTableCopy[$currentDay]);
-                $gameTableNew = $this->getOptimalPairTable($availablePairListNextDay, $availablePairListNextDay, $maxGamePerDay, $currentDay + 1, [], $gameTableCopy);
-            } else {
-                $gameTableNew = $this->getOptimalPairTable($availablePairListDay, $availablePairListStageCut, $maxGamePerDay, $currentDay, $scheduledTeamKeyListCopy, $gameTableCopy);
+            if (count($gameTableCopy) >= $maxGamePerDay) {
+                return $gameTableCopy;
             }
+
+            $gameTableNew = $this->getMaxPairTableForDay($availablePairListStageCut, $maxGamePerDay, $scheduledTeamKeyListCopy, $gameTableCopy);
 
             if ($gameTable === null) {
                 $gameTable = $gameTableNew;
                 $gameTableDayCount = count($gameTable);
             } else {
                 $gameTableNewDayCount = count($gameTableNew);
-                if ($gameTableNewDayCount < $gameTableDayCount) {
+                if ($gameTableNewDayCount > $gameTableDayCount) {
                     $gameTable = $gameTableNew;
                     $gameTableDayCount = $gameTableNewDayCount;
                 }
             }
         }
 
-        if ($gameTable === null) {
-            $availablePairListNextDay = array_diff_key($availablePairListDay, $gameTableCarry[$currentDay]);
-
-            return $this->getOptimalPairTable($availablePairListNextDay, $availablePairListNextDay, $maxGamePerDay, $currentDay + 1, [], $gameTableCarry);
-        }
-
-        return $gameTable;
+        return $gameTable ?? $gameTableCarry;
     }
+
 }
