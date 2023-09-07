@@ -95,61 +95,81 @@ class GameTableFactoryTest extends TestCase
         ], $gameTable);
     }
 
-    public function testFourTeamsMaxTeamGameTwo(): void
+    public function testFiveTeams(): void
     {
         $teamList = [
             't1',
             't2',
             't3',
             't4',
+            't5',
         ];
 
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, PHP_INT_MAX);
+        $gameTable = $this->gameTableFactory->createGameTable($teamList);
 
         $this->assertEquals([
             1 => [
                 ['t1', 't2'],
                 ['t3', 't4'],
-                ['t1', 't3'],
-                ['t2', 't4'],
             ],
             2 => [
-                ['t1', 't4'],
-                ['t3', 't2'],
-            ]
-        ], $gameTable);
-    }
-
-    public function testFourTeamsMaxDayGameOne(): void
-    {
-        $teamList = [
-            't1',
-            't2',
-            't3',
-            't4',
-        ];
-
-        $gameTable = $this->gameTableFactory->createGameTable($teamList, 2, 1);
-
-        $this->assertEquals([
-            1 => [
-                ['t1', 't2'],
-            ],
-            2 => [
-                ['t3', 't4'],
+                ['t5', 't1'],
+                ['t2', 't3'],
             ],
             3 => [
+                ['t4', 't5'],
                 ['t1', 't3'],
             ],
             4 => [
                 ['t2', 't4'],
+                ['t5', 't3'],
             ],
             5 => [
                 ['t1', 't4'],
+                ['t2', 't5'],
             ],
-            6 => [
-                ['t3', 't2'],
-            ]
+        ], $gameTable);
+    }
+
+    public function testFromSpecification(): void
+    {
+        $teamList = [
+            't1',
+            't2',
+            't3',
+            't4',
+            't5',
+            't6',
+        ];
+
+        $gameTable = $this->gameTableFactory->createGameTable($teamList);
+
+        $this->assertEquals([
+            1 => [
+                ['t1', 't2'],
+                ['t3', 't4'],
+                ['t5', 't6'],
+            ],
+            2 => [
+                ['t1', 't3'],
+                ['t2', 't5'],
+                ['t4', 't6'],
+            ],
+            3 => [
+                ['t2', 't4'],
+                ['t5', 't1'],
+                ['t6', 't3'],
+            ],
+            4 => [
+                ['t4', 't1'],
+                ['t6', 't2'],
+                ['t3', 't5'],
+            ],
+            5 => [
+                ['t1', 't6'],
+                ['t2', 't3'],
+                ['t5', 't4'],
+            ],
         ], $gameTable);
     }
 }
